@@ -30,6 +30,7 @@ from .commands import (
     phone_numbers,
     sms,
     credits,
+    feedback,
 )
 
 app = typer.Typer(
@@ -64,6 +65,7 @@ app.add_typer(data.app,        name="data",         help="Data deletion requests
 app.add_typer(phone_numbers.app, name="phone-numbers", help="Phone number management: list, get, settings.")
 app.add_typer(sms.app,           name="sms",           help="Send SMS and manage conversations.")
 app.add_typer(credits.app,       name="credits",       help="Credit balance and available bundles.")
+app.add_typer(feedback.app,      name="feedback",      help="Submit feedback: errors, feature requests, and signals.")
 
 
 @app.callback(invoke_without_command=True)

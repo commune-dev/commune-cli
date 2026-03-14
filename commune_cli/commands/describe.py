@@ -37,6 +37,7 @@ _GROUPS: dict[str, str] = {
     "dmarc":         "DMARC reports and compliance summary",
     "data":          "Data deletion requests (GDPR)",
     "config":        "CLI config, agent registration, API keys",
+    "feedback":      "Submit feedback: errors, feature requests, and signals",
 }
 
 
@@ -133,6 +134,7 @@ _GROUP_TYPES: dict[str, list[str]] = {
     "dmarc":         [],
     "data":          [],
     "config":        [],
+    "feedback":      [],
 }
 
 
@@ -579,6 +581,26 @@ _COMMANDS: dict[str, dict] = {
             "id": {"type": "string", "required": True},
         },
         "returns": "{ id, status }",
+    },
+    # ── Feedback ─────────────────────────────────────────────────────
+    "feedback.submit": {
+        "description": "Submit feedback to the Commune product team. Use for errors, feature requests, or signals (observations/impressions).",
+        "method": "POST /v1/feedback",
+        "parameters": {
+            "--type": {
+                "type": "string",
+                "required": True,
+                "enum": ["error", "feature", "signal"],
+                "description": (
+                    "error = something broke or behaved unexpectedly; "
+                    "feature = need a capability that doesn't exist; "
+                    "signal = observation or impression (positive or improvement)"
+                ),
+            },
+            "--message": {"type": "string", "required": True, "description": "Feedback description (max 4000 chars). Prompted if omitted."},
+            "--context": {"type": "json", "required": False, "description": 'Structured metadata, e.g. \'{"command":"list_threads","status_code":500}\''},
+        },
+        "returns": "{ id, type, status: received, created_at }",
     },
     # ── Config ───────────────────────────────────────────────────────
     "config.register": {
