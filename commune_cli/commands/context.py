@@ -8,7 +8,7 @@ and presents them as a single unified view.
 from __future__ import annotations
 
 import time
-from typing import Any, Optional
+from typing import Any
 
 import typer
 
@@ -26,7 +26,6 @@ def _fetch_context(client: Any) -> dict:
         "delivery": {},
         "webhooks": {},
         "credits": {},
-        "phone_numbers": [],
     }
 
     # Auth / org info
@@ -108,25 +107,6 @@ def _fetch_context(client: Any) -> dict:
     except Exception:
         pass
 
-    # Phone numbers
-    try:
-        r = client.get("/v1/phone-numbers")
-        if r.is_success:
-            data = r.json()
-            items = data.get("data", data) if isinstance(data, dict) else data
-            if isinstance(items, list):
-                ctx["phone_numbers"] = [
-                    {
-                        "id": d.get("id", ""),
-                        "number": d.get("phoneNumber") or d.get("phone_number", ""),
-                        "friendly_name": d.get("friendlyName") or d.get("friendly_name"),
-                        "type": d.get("type", ""),
-                    }
-                    for d in items
-                ]
-    except Exception:
-        pass
-
     return ctx
 
 
@@ -205,18 +185,6 @@ def _show_context_tty(ctx_data: dict) -> None:
             tbl.add_row(key, f"[{style}]{val}[/{style}]")
         return Panel(tbl, title="[bold bright_cyan]Delivery (7d)[/bold bright_cyan]", border_style="rgb(0,178,255)", padding=(0, 1))
 
-    def _phone_section() -> Optional[Panel]:
-        phones = ctx_data.get("phone_numbers", [])
-        if not phones:
-            return None
-        tbl = Table.grid(padding=(0, 2))
-        tbl.add_column("number", style="bold white")
-        tbl.add_column("name", style="dim")
-        tbl.add_column("type", style="dim")
-        for p in phones:
-            tbl.add_row(p.get("number", ""), p.get("friendly_name") or "—", p.get("type", ""))
-        return Panel(tbl, title=f"[bold bright_cyan]Phone Numbers ({len(phones)})[/bold bright_cyan]", border_style="rgb(0,178,255)", padding=(0, 1))
-
     # ── Sections to reveal ────────────────────────────────────────────
 
     sections = [
@@ -225,9 +193,6 @@ def _show_context_tty(ctx_data: dict) -> None:
         _inboxes_section,
         _delivery_section,
     ]
-    phone = _phone_section()
-    if phone:
-        sections.append(lambda: phone)  # type: ignore[arg-type]
 
     def build_frame(n: int) -> Group:
         parts: list = []

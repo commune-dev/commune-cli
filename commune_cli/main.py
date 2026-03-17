@@ -27,8 +27,6 @@ from .commands import (
     webhooks,
     dmarc,
     data,
-    phone_numbers,
-    sms,
     credits,
     feedback,
 )
@@ -62,8 +60,6 @@ app.add_typer(delivery.app,    name="delivery",     help="Delivery metrics, even
 app.add_typer(webhooks.app,    name="webhooks",     help="Webhook delivery log: list, retry, health.")
 app.add_typer(dmarc.app,       name="dmarc",        help="DMARC reports and summary.")
 app.add_typer(data.app,        name="data",         help="Data deletion requests (GDPR / destructive).")
-app.add_typer(phone_numbers.app, name="phone-numbers", help="Phone number management: list, get, settings.")
-app.add_typer(sms.app,           name="sms",           help="Send SMS and manage conversations.")
 app.add_typer(credits.app,       name="credits",       help="Credit balance and available bundles.")
 app.add_typer(feedback.app,      name="feedback",      help="Submit feedback: errors, feature requests, and signals.")
 
