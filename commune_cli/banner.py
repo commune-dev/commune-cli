@@ -50,8 +50,6 @@ _COMMANDS = [
     ("search",        "semantic full-text search across threads"),
     ("delivery",      "metrics · events · suppressions · check"),
     ("webhooks",      "deliveries · retry · health"),
-    ("sms",           "send · conversations · thread · search"),
-    ("phone-numbers", "list · get · available · provision"),
     ("attachments",   "upload · get · url"),
     ("credits",       "balance · bundles · checkout"),
     ("dmarc",         "reports · summary"),

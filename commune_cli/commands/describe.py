@@ -29,8 +29,6 @@ _GROUPS: dict[str, str] = {
     "domains":       "Custom domain management and DNS verification",
     "search":        "Semantic full-text search across threads",
     "delivery":      "Delivery metrics, events, and suppressions",
-    "sms":           "Send SMS, view conversations, search messages",
-    "phone-numbers": "Provision and manage phone numbers",
     "webhooks":      "Webhook delivery log and health",
     "attachments":   "Upload files and get download URLs",
     "credits":       "Credit balance and purchasable bundles",
@@ -101,21 +99,6 @@ _TYPES: dict[str, dict] = {
         "bounce_rate": "number (0-1)",
         "complaint_rate": "number (0-1)",
     },
-    "PhoneNumber": {
-        "id": "string",
-        "phone_number": "string (E.164)",
-        "friendly_name": "string | null",
-        "type": "string (TollFree | Local)",
-        "status": "string",
-    },
-    "SmsMessage": {
-        "id": "string",
-        "thread_id": "string",
-        "direction": "string (inbound | outbound)",
-        "body": "string",
-        "status": "string",
-        "created_at": "string (ISO 8601)",
-    },
 }
 
 # Which types each group uses (for scoped output)
@@ -126,8 +109,6 @@ _GROUP_TYPES: dict[str, list[str]] = {
     "domains":       ["Domain", "DnsRecord"],
     "search":        ["Thread"],
     "delivery":      ["DeliveryMetrics"],
-    "sms":           ["SmsMessage"],
-    "phone-numbers": ["PhoneNumber"],
     "webhooks":      [],
     "attachments":   [],
     "credits":       [],
@@ -478,80 +459,6 @@ _COMMANDS: dict[str, dict] = {
         },
         "returns": "DmarcSummary",
     },
-    # ── Phone Numbers ────────────────────────────────────────────────
-    "phone-numbers.list": {
-        "description": "List all provisioned phone numbers",
-        "method": "GET /v1/phone-numbers",
-        "parameters": {},
-        "returns": "PhoneNumber[]",
-    },
-    "phone-numbers.get": {
-        "description": "Get a specific phone number",
-        "method": "GET /v1/phone-numbers/{phone_number_id}",
-        "parameters": {
-            "phone_number_id": {"type": "string", "required": True},
-        },
-        "returns": "PhoneNumber",
-    },
-    "phone-numbers.available": {
-        "description": "Browse available phone numbers before purchasing",
-        "method": "GET /v1/phone-numbers/available",
-        "parameters": {
-            "--type": {"type": "string", "required": False, "enum": ["TollFree", "Local"]},
-            "--country": {"type": "string", "required": False},
-            "--limit": {"type": "integer", "required": False},
-        },
-        "returns": "PhoneNumber[]",
-    },
-    "phone-numbers.provision": {
-        "description": "Purchase and activate a phone number",
-        "method": "POST /v1/phone-numbers",
-        "parameters": {
-            "--phone-number": {"type": "string (E.164)", "required": False},
-            "--type": {"type": "string", "required": False, "enum": ["TollFree", "Local"]},
-            "--friendly-name": {"type": "string", "required": False},
-        },
-        "returns": "PhoneNumber",
-    },
-    # ── SMS ──────────────────────────────────────────────────────────
-    "sms.send": {
-        "description": "Send an SMS message",
-        "method": "POST /v1/sms/send",
-        "parameters": {
-            "--to": {"type": "string (E.164)", "required": True},
-            "--body": {"type": "string", "required": True},
-            "--phone-number-id": {"type": "string", "required": False},
-        },
-        "returns": "{ message_id, thread_id, status, credits_charged }",
-    },
-    "sms.conversations": {
-        "description": "List SMS conversation summaries",
-        "method": "GET /v1/sms/conversations",
-        "parameters": {
-            "--phone-number-id": {"type": "string", "required": False},
-            "--limit": {"type": "integer", "required": False},
-        },
-        "returns": "SmsConversation[]",
-    },
-    "sms.thread": {
-        "description": "Get all messages in an SMS thread",
-        "method": "GET /v1/sms/threads/{remote_number}",
-        "parameters": {
-            "remote_number": {"type": "string (E.164)", "required": True},
-            "--phone-number-id": {"type": "string", "required": True},
-        },
-        "returns": "SmsMessage[]",
-    },
-    "sms.search": {
-        "description": "Semantic search across SMS history",
-        "method": "GET /v1/sms/search",
-        "parameters": {
-            "query": {"type": "string", "required": True},
-            "--phone-number-id": {"type": "string", "required": False},
-            "--limit": {"type": "integer", "required": False},
-        },
-        "returns": "SmsMessage[]",
-    },
     # ── Credits ──────────────────────────────────────────────────────
     "credits.balance": {
         "description": "Get current credit balance and usage",
@@ -683,7 +590,7 @@ def _build_full() -> dict:
     return {
         "name": "commune",
         "version": __version__,
-        "description": "Email and SMS infrastructure for AI agents",
+        "description": "Email infrastructure for AI agents",
         "base_url": "https://api.commune.email",
         "auth": {
             "method": "bearer_token",
